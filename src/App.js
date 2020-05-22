@@ -1,11 +1,145 @@
-import React from "react";
+import React, { useState } from "react";
+import axios from "axios";
+import { Route } from "react-router-dom";
+
+import Form from "./Form";
+import Homepage from "./Homepage";
+import formSchema from "./formSchema";
+import * as yup from "yup";
+
+const initialFormValues = {
+  name: "",
+  size: "",
+  pepperoni: "",
+  cheese: "",
+  peppers: "",
+  onions: "",
+  specialInstructions: "",
+};
+
+const initialFormErrors = {
+  name: "",
+  size: "",
+  pepperoni: "",
+  cheese: "",
+  peppers: "",
+  onions: "",
+  specialInstructions: "",
+};
+
+const initialPizzas = [];
 
 const App = () => {
+  const [pizzas, setPizzas] = useState(initialPizzas);
+  const [formValues, setFormValues] = useState(initialFormValues);
+  const [formErrors, setFormErrors] = useState(initialFormErrors);
+
+  const postNewPizza = (newPizza) => {
+    axios
+      .post("https://reqres.in/api/pizzas", newPizza)
+      .then((res) => {
+        console.log(res);
+        setPizzas([res.data, ...pizzas]);
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+      .finally(() => {
+        setFormValues(initialFormValues);
+      });
+  };
+
+  const onSubmit = (evt) => {
+    evt.preventDefault();
+
+    const newPizza = {
+      name: formValues.name.trim(),
+      size: formValues.size,
+      pepperoni: formValues.pepperoni,
+      cheese: formValues.cheese,
+      peppers: formValues.peppers,
+      onions: formValues.onions,
+      specialInstructions: formValues.specialInstructions.trim(),
+    };
+    postNewPizza(newPizza);
+  };
+
+  const onInputChange = (evt) => {
+    const name = evt.target.name;
+    const value = evt.target.value;
+
+    yup
+      .reach(formSchema, name)
+      .validate(value)
+      .then((valid) => {
+        setFormErrors({
+          ...formErrors,
+          [name]: "",
+        });
+      })
+      .catch((err) => {
+        setFormErrors({
+          ...formErrors,
+          [name]: err.errors[0],
+        });
+      });
+
+    setFormValues({
+      ...formValues,
+      [name]: value,
+    });
+  };
+
+  const onCheckboxChange = (evt) => {
+    const { name } = evt.target;
+    const { checked } = evt.target;
+
+    setFormValues({
+      ...formValues,
+      [name]: checked,
+    });
+  };
+
   return (
-    <>
-      <h1>Lambda Eats</h1>
-      <p>You can remove this code and create your own header</p>
-    </>
+    <div className='bigDiv'>
+      <h1>Lambda Eatza Pizza</h1>
+
+      <Route path="/">
+        <Homepage />
+      </Route>
+
+    <div className="lilDiv">
+      
+      <Route path="/pizza">
+        <Form
+          values={formValues}
+          onInputChange={onInputChange}
+          onSubmit={onSubmit}
+          errors={formErrors}
+          onCheckboxChange={onCheckboxChange}
+        />
+      </Route>
+
+      {pizzas.map((pizza, index) => {
+        return (
+          <div key={index}>
+            <h2>{pizza.name}</h2>
+            <h3>Size: {pizza.size} </h3>
+            <h3>Toppings: </h3>
+            <p>
+              {pizza.cheese ? "cheese," : ""}
+              {pizza.pepperoni ? "pepperoni," : ""}
+              {pizza.peppers ? "peppers," : ""}
+              {pizza.onions ? "onions," : ""}
+            </p>
+            <h3>Special Instructions: </h3>
+            <p> {pizza.specialInstructions}</p>
+          </div>
+        );
+      })}
+
+  </div>
+    </div>
   );
 };
 export default App;
