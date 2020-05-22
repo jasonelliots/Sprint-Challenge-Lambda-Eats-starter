@@ -1,12 +1,7 @@
 import React from "react";
+import {Link} from "react-router-dom"; 
 
 export default function Form(props) {
-
-//  A name text input field
-//  Validation for name - name must be at least 2 characters
-//  Dropdown form component for pizza size
-//  Checklist form component for toppings - at least 4 (hint: name each separately!)
-//  Text input form component for special instructions
 
   const {
     values,
@@ -18,6 +13,12 @@ export default function Form(props) {
     } = props;
 
   return (
+    <div>
+       <Link to="/">
+            <h1>MAKE YO PIZZA</h1>
+        </Link>
+
+        <div className="lilDiv">
     <form onSubmit={onSubmit}>
 
     <div className='errors'>
@@ -25,7 +26,8 @@ export default function Form(props) {
          
      </div>
      
-      <label> Name 
+     <h2> Your name: </h2>
+      <label>  
         <input
           value={values.name}
           onChange={onInputChange}
@@ -96,5 +98,7 @@ export default function Form(props) {
         <br></br>
       <button> Add to Order! </button>
     </form>
+    </div>
+    </div>
   );
 }

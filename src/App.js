@@ -7,6 +7,8 @@ import Homepage from "./Homepage";
 import formSchema from "./formSchema";
 import * as yup from "yup";
 
+import pizza from './pizza.jpg'
+
 const initialFormValues = {
   name: "",
   size: "",
@@ -68,6 +70,7 @@ const App = () => {
     const name = evt.target.name;
     const value = evt.target.value;
 
+    if(name === 'name'){ 
     yup
       .reach(formSchema, name)
       .validate(value)
@@ -82,7 +85,7 @@ const App = () => {
           ...formErrors,
           [name]: err.errors[0],
         });
-      });
+      });}
 
     setFormValues({
       ...formValues,
@@ -102,14 +105,15 @@ const App = () => {
 
   return (
     <div className='bigDiv'>
-      <h1>Lambda Eatza Pizza</h1>
 
-      <Route path="/">
+
+      <Route exact path="/">
         <Homepage />
       </Route>
 
-    <div className="lilDiv">
       
+
+
       <Route path="/pizza">
         <Form
           values={formValues}
@@ -119,6 +123,7 @@ const App = () => {
           onCheckboxChange={onCheckboxChange}
         />
       </Route>
+
 
       {pizzas.map((pizza, index) => {
         return (
@@ -137,8 +142,7 @@ const App = () => {
           </div>
         );
       })}
-
-  </div>
+  
     </div>
   );
 };
